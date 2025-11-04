@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-//hehe hoo hoo 
 
 using std::vector;
 
@@ -39,6 +38,15 @@ public:
         return result;
     }
     
+    Matrix operator*(double scalar) const {
+    Matrix result(Row, Col);
+    for (int i = 0; i < Row; i++) {
+        for (int j = 0; j < Col; j++) {
+            result.data[i][j] = data[i][j] * scalar;
+        }
+    }
+    return result;
+}
     int getRow(){
         return Row;
     }
@@ -62,11 +70,15 @@ int main() {
     std::cout << "This is a " << matrix1.getRow() << "x" << matrix1.getCol() << " matrix\n";
     matrix1.print();
     
-    // Test multiplication
+    // Test matrix multiplication
     Matrix matrix2(7, 3); // Compatible dimensions: 6x7 * 7x3 = 6x3
-    Matrix result = matrix1 * matrix2;
-    std::cout << "\nMultiplication result is a " << result.getRow() << "x" << result.getCol() << " matrix\n";
-    result.print();
+    Matrix result1 = matrix1 * matrix2;
+    std::cout << "\nMultiplication result is a " << result1.getRow() << "x" << result1.getCol() << " matrix\n";
+    result1.print();
     
+    //Test scalar-matrix multiplication
+    Matrix result2 = matrix1 * 5;
+    std::cout << "\nMultiplication result is a " << result2.getRow() << "x" << result2.getCol() << " matrix\n";
+    result2.print();
     return 0;
 }
