@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 using std::vector;
 
@@ -29,6 +31,30 @@ public:
             Col = d[0].size(); //Number of colums = first inner vector size
         } else {
             Col = 0;
+        }
+    }
+
+    //initialise a matrix with random values
+    Matrix(int row, int col, bool isRandom) {
+        Row = row;
+        Col = col;
+        data.resize(Row);
+        for (int i = 0; i < Row; i++){
+            data[i].resize(Col);
+        }
+        if (isRandom){
+            srand(time(0));
+            for (int i = 0; i < Row; i++){
+                for (int j = 0; j < Col; j++) {
+                    data[i][j] = (double)rand() / RAND_MAX;
+                }   
+            }
+        } else {
+            for (int i = 0; i < Row; i++) {
+                for (int j = 0; j < Col; j++) {
+                    data [i][j] = 0.0f;
+                }
+            }
         }
     }
 
@@ -122,7 +148,7 @@ int main() {
     std::cout << "\nAddition result is a " << matrix3.getRow() << "x" << matrix3.getCol() << " matrix\n";
     Matrix result3 = matrix1 + matrix3;
     result3.print();
-    */
+    
 
     //printing a given-value matrix
     Matrix matrixFilled1({{1, 2, 3, 4},
@@ -131,5 +157,11 @@ int main() {
     std::cout << "This is a " << matrixFilled1.getRow() << "x" << matrixFilled1.getCol() << " matrix\n";
     matrixFilled1.print();
 
+    */
+
+    Matrix matrixRandom1(6, 7, true);
+    std::cout << "This is a " << matrixRandom1.getRow() << "x" << matrixRandom1.getCol() << " matrix\n";
+    matrixRandom1.print();
+    
     return 0;
 }
