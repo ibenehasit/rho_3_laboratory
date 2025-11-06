@@ -9,6 +9,8 @@ class Matrix{
     vector<vector<double>> data;
 
 public:
+
+    //initialise an empty matrix
     Matrix(int row, int col){
         Row = row;
         Col = col;
@@ -19,6 +21,18 @@ public:
         }
     }
 
+    //initisialise a matrix with given values
+    Matrix(vector<vector<double>> d){
+        data = d; // copy the input data
+        Row = d.size(); //the number of rows = outer vector size
+        if (Row > 0) {
+            Col = d[0].size(); //Number of colums = first inner vector size
+        } else {
+            Col = 0;
+        }
+    }
+
+    //Matrix-matrix multiplication overload
     Matrix operator*(const Matrix& other) const {
         if (Col != other.Row) {
             std::cerr << "Matrix dimensions incompatible for multiplication\n";
@@ -37,6 +51,7 @@ public:
         return result;
     }
     
+    //Scalar-Matrix multiplication overload
     Matrix operator*(double scalar) const {
         Matrix result(Row, Col);
         for (int i = 0; i < Row; i++) {
@@ -47,6 +62,7 @@ public:
         return result;
     }
 
+    //Matrix-Matrix addition overload 
     Matrix operator+(const Matrix& other) const {
         if (Row != other.Row || Col != other.Col) {
             std::cerr << "Error: Matrices must have same dimensions for addition\n";
@@ -62,6 +78,8 @@ public:
         }
         return result;
     }
+
+    
 
     int getRow(){
         return Row;
