@@ -1,41 +1,40 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
-#include <cstdlib>
-#include <ctime>
+#include <iostream>
+#include <iomanip>
 
-using std::vector;
+using namespace std;
 
-class Matrix{
-    int Row;
-    int Col;
-    vector<vector<double>> data;
+class Matrix
+{
+private:
+	int rows; // Changed from 'Row'
+	int col;  // Changed from 'Col'
 
 public:
+	vector<vector<double>> data; // Public data access is expected by nn_utils functions
 
-    //initialise an empty matrix
+	// Constructors
+	Matrix(); // Implemented for safety and compatibility
     Matrix(int row, int col);
+	explicit Matrix(vector<vector<double>> d);
+	Matrix(int r, int c, bool isRandom);
 
-    //initisialise a matrix with given values
-    Matrix(vector<vector<double>> d);
+	// Getters (Must be const to avoid type qualifier errors)
+	int getRows() const; 
+	int getCol() const;
+	vector<vector<double>> getData() const;
 
-    //initialise a matrix with random values
-    Matrix(int row, int col, bool isRandom);
+	void print_matrix() const;
 
-    //Matrix-matrix multiplication overload
-    Matrix operator*(const Matrix& other) const;
-    
-    //Scalar-Matrix multiplication overload
-    Matrix operator*(double scalar) const;
+	// Operator Overloads (Must be const)
+	Matrix operator*(const Matrix& mat) const;
+	Matrix operator+(const Matrix& mat) const;
+	Matrix operator-(const Matrix& mat) const;
+	Matrix operator*(double num) const;
 
-    //Matrix-Matrix addition overload 
-    Matrix operator+(const Matrix& other) const;
-
-        Matrix operator-(const Matrix& other) const;
-    
-
-    int getRow();
-    int getCol();
-    void print();
+	// Required Backpropagation Functions
+	Matrix transpose() const;
+	Matrix element_multiply(const Matrix& mat) const;
 };

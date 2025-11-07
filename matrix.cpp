@@ -1,137 +1,176 @@
-#include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-
 #include "matrix.hpp"
+#include <cstdlib> 
+#include <ctime>   
+#include <iostream> 
 
-using std::vector;
+using namespace std;
 
-// IMPLEMENT METHODS USING Matrix:: SCOPE RESOLUTION
+// Default constructor - Fixes the missing default constructor issue
+Matrix::Matrix()
+{
+	rows = 0;
+	col = 0;
+}
 
-//initialise an empty matrix
-Matrix::Matrix(int row, int col){
-    Row = row;
-    Col = col;
+Matrix::Matrix(int a, int b){
+    rows = a;
+    col = b;
 
-    data.resize(Row); 
-    for (int i = 0; i < Row; i++) {
-        data[i].resize(Col, 0.0); 
+    data.resize(rows); 
+    for (int i = 0; i < rows; i++) {
+        data[i].resize(col, 0.0); 
     }
 }
 
-//initialise a matrix with given values
-Matrix::Matrix(vector<vector<double>> d){
-    data = d; // copy the input data
-    Row = d.size(); //the number of rows = outer vector size
-    if (Row > 0) {
-        Col = d[0].size(); //Number of colums = first inner vector size
-    } else {
-        Col = 0;
-    }
+// Constructor with given values
+Matrix::Matrix(vector<vector<double>> d)
+{
+	data = d; 
+	rows = d.size(); 
+	if (rows > 0) {
+		col = d[0].size();
+	} else {
+		col = 0;
+	}
 }
 
-//initialise a matrix with random values
-Matrix::Matrix(int row, int col, bool isRandom) {
-    Row = row;
-    Col = col;
-    data.resize(Row);
-    for (int i = 0; i < Row; i++){
-        data[i].resize(Col);
-    }
-    if (isRandom){
-        srand(time(0));
-        for (int i = 0; i < Row; i++){
-            for (int j = 0; j < Col; j++) {
-                data[i][j] = (double)rand() / RAND_MAX;
-            }   
+// Constructor with random or zeroed values
+Matrix::Matrix(int r, int c, bool isRandom)
+{
+	rows = r;
+	col = c;
+	data.resize(rows);
+	for (int i = 0; i < rows; i++){
+		data[i].resize(col);
+	}
+    
+	if (isRandom){
+		// Note: The srand(time(0)) is usually called once in main.cpp, but the matrix logic is correct.
+		for (int i = 0; i < rows; i++){
+			for (int j = 0; j < col; j++) {
+				data[i][j] = (double)rand() / RAND_MAX;
+			}   
+		}
+	} else {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < col; j++) {
+				data [i][j] = 0.0;
+			}
+		}
+	}
+}
+
+// Getters (Renamed to match NeuralNetwork.h)
+int Matrix::getRows() const { return rows; }
+int Matrix::getCol() const { return col; }
+vector<vector<double>> Matrix::getData() const { return data; }
+
+void Matrix::print_matrix() const
+{
+	// Renamed from print() to print_matrix()
+	for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < col; j++) {
+            std::cout << data[i][j] << " ";
         }
-    } else {
-        for (int i = 0; i < Row; i++) {
-            for (int j = 0; j < Col; j++) {
-                data [i][j] = 0.0f;
-            }
-        }
+        std::cout << "\n";
     }
 }
 
-//Matrix-matrix multiplication overload
+// Matrix-matrix multiplication overload (Logic retained from your original code)
 Matrix Matrix::operator*(const Matrix& other) const {
-    if (Col != other.Row) {
-        std::cerr << "Matrix dimensions incompatible for multiplication\n";
+    if (col != other.rows) {
+        std::cerr << "Matrix dimensions incompatible for multiplication (A.col != B.row)\n";
         return Matrix(0, 0);
     }
 
-    Matrix result(Row, other.Col);
-    for (int i = 0; i < Row; i++) {
-        for (int j = 0; j < other.Col; j++) {
-            result.data[i][j] = 0;
-            for (int k = 0; k < Col; k++) {
-                result.data[i][j] += data[i][k] * other.data[k][j];
+    Matrix result(rows, other.col, false); 
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < other.col; j++) {
+            double sum = 0;
+            for (int k = 0; k < col; k++) {
+                sum += data[i][k] * other.data[k][j];
             }
+            result.data[i][j] = sum;
         }
     }
     return result;
 }
 
-//Scalar-Matrix multiplication overload
-Matrix Matrix::operator*(double scalar) const {
-    Matrix result(Row, Col);
-    for (int i = 0; i < Row; i++) {
-        for (int j = 0; j < Col; j++) {
-            result.data[i][j] = data[i][j] * scalar;
-        }
-    }
-    return result;
-}
-
-//Matrix-Matrix addition overload 
+// Matrix-Matrix addition overload (Logic retained)
 Matrix Matrix::operator+(const Matrix& other) const {
-    if (Row != other.Row || Col != other.Col) {
+    if (rows != other.rows || col != other.col) {
         std::cerr << "Error: Matrices must have same dimensions for addition\n";
         return Matrix(0, 0);
     }
 
-    Matrix result(Row, Col);
+    Matrix result(rows, col, false);
 
-    for(int i = 0; i < Row; i++){
-        for (int j = 0; j < Col; j++) {
+    for(int i = 0; i < rows; i++){
+        for (int j = 0; j < col; j++) {
             result.data[i][j] = data[i][j] + other.data[i][j];
         }
     }
     return result;
 }
 
-//Matrix-Matrix subtraction overload
+// Matrix-Matrix subtraction overload (Logic retained)
 Matrix Matrix::operator-(const Matrix& other) const {
-    if (Row != other.Row || Col != other.Col) {
+    if (rows != other.rows || col != other.col) {
         std::cerr << "Error: Matrices must have same dimensions for subtraction\n";
         return Matrix(0, 0);
     }
 
-    Matrix result(Row, Col);
+    Matrix result(rows, col, false);
 
-    for(int i = 0; i < Row; i++){
-        for (int j = 0; j < Col; j++) {
+    for(int i = 0; i < rows; i++){
+        for (int j = 0; j < col; j++) {
             result.data[i][j] = data[i][j] - other.data[i][j];
         }
     }
     return result;
 }
 
-int Matrix::getRow(){
-    return Row;
-}
-
-int Matrix::getCol(){
-    return Col;
-}
-
-void Matrix::print() {
-    for (int i = 0; i < Row; i++) {
-        for (int j = 0; j < Col; j++) {
-            std::cout << data[i][j] << " ";
+// Matrix-scalar multiplication overload (Logic retained)
+Matrix Matrix::operator*(double scalar) const {
+    Matrix result(rows, col, false);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < col; j++) {
+            result.data[i][j] = data[i][j] * scalar;
         }
-        std::cout << "\n";
     }
+    return result;
+}
+
+// IMPLEMENTATION: Transpose (Required for Section 3.3.6.b & 3.3.8.a)
+Matrix Matrix::transpose() const
+{
+	Matrix result_data(col, rows, false); // Swap dimensions
+	for (int i = 0; i < rows; ++i)
+	{
+		for (int j = 0; j < col; ++j)
+		{
+			result_data.data[j][i] = data[i][j];
+		}
+	}
+	return result_data;
+}
+
+// IMPLEMENTATION: Element-wise multiplication (Required for Section 3.3.5.c)
+Matrix Matrix::element_multiply(const Matrix& other) const
+{
+	if (rows != other.rows || col != other.col) {
+		std::cerr << "Error: Matrices must have same dimensions for element-wise multiplication\n";
+		return Matrix(0, 0);
+	}
+	
+	Matrix result_data(rows, col, false);
+
+	for (int i = 0; i < rows; ++i)
+	{
+		for (int j = 0; j < col; ++j)
+		{
+			result_data.data[i][j] = data[i][j] * other.data[i][j];
+		}
+	}
+	return result_data;
 }
